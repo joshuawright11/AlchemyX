@@ -6,7 +6,27 @@ import SwiftSyntaxMacros
 
 // macro to generate view? (no - protocol)
 
-public enum ResourceMacro: MemberMacro, ExtensionMacro {
+public enum ResourceMacro: MemberMacro, ExtensionMacro, PeerMacro {
+    
+    // MARK: PeerMacro
+
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        let string = """
+            @API
+            protocol TodoAPI {
+                @GET("/todos")
+                func getTodos() async throws -> [Todo]
+            }
+            """
+        return [
+            DeclSyntax(stringLiteral: string)
+        ]
+    }
+
     // MARK: MemberMacro
 
     public static func expansion(
