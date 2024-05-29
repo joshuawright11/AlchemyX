@@ -1,17 +1,14 @@
 public protocol Resource: Codable, Identifiable where ID == Identifier? {
     associatedtype Identifier
+    
     var id: Identifier? { get }
+    
     static var path: String { get }
     static var fields: [ResourceField] { get }
 }
 
 public extension Resource {
-    static var path: String { "/\(Self.self)".lowercased() }
-}
-
-public enum ResourceError: Error {
-    case missingId
-    case invalidResponse
+    static var path: String { "\(Self.self)".lowercased() }
 }
 
 public struct ResourceField: Identifiable {
