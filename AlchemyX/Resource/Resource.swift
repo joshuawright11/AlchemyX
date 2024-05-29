@@ -1,8 +1,8 @@
 public protocol Resource: Codable, Identifiable where ID == Identifier? {
     associatedtype Identifier
-    
+
     var id: Identifier? { get }
-    
+
     static var path: String { get }
     static var fields: [ResourceField] { get }
 }

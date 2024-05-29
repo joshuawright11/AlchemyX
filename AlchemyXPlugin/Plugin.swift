@@ -6,6 +6,7 @@ import SwiftSyntaxMacros
 struct AlchemyXPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         ResourceMacro.self,
+        DecoratorMacro.self,
     ]
 }
 #endif
