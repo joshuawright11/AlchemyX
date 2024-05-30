@@ -1,53 +1,37 @@
 import Foundation
 
-extension Resource {
-    public func create() async throws -> Self {
-        try await ResourceClient().create(self)
-    }
-
-    public func get(id: Identifier) async throws -> Self {
-        try await ResourceClient().get(id: id)
-    }
-
-    public func all() async throws -> [Self] {
-        try await ResourceClient().all()
-    }
-
-    public func update() async throws -> Self {
-        try await ResourceClient().update(self)
-    }
-
-    public func delete() async throws {
-        try await ResourceClient().delete(self)
-    }
-}
-
-public struct ResourceClient<R: Resource> {
-    public let basePath: String = [ResourceConfig.baseURL, R.path].joined(separator: "/")
+public final class ResourceClient<R: Resource> {
+    public let basePath: String = [AlchemyX.config.baseURL, R.path].joined(separator: "/")
     public let session: URLSession = .shared
     public let decoder = JSONDecoder()
     public let encoder = JSONEncoder()
-
-    public func create(_ model: R) async throws -> R {
-        try await request("POST", "/", body: model)
-    }
 
     public func get(id: R.Identifier) async throws -> R {
         try await request("GET", "/\(id)")
     }
 
+    public func all(_ parameters: QueryParameters? = nil) async throws -> [R] {
+        try await request("GET", "/", body: parameters)
+    }
+
+    public func create(_ model: R) async throws -> R {
+        try await notifyChange { try await request("POST", "/", body: model) }
+    }
+
     public func update(_ model: R) async throws -> R {
         guard let id = model.id else { throw ResourceError.missingId }
-        return try await request("PATCH", "/\(id)")
+        return try await notifyChange { try await request("PATCH", "/\(id)") }
     }
 
     public func delete(_ model: R) async throws {
         guard let id = model.id else { throw ResourceError.missingId }
-        try await request("DELETE", "/\(id)")
+        try await notifyChange { _ = try await requestData("DELETE", "/\(id)") }
     }
 
-    public func all() async throws -> [R] {
-        try await request("GET", "/")
+    private func notifyChange<Return>(action: () async throws -> Return) async throws -> Return {
+        let value = try await action()
+        await ResourceChanges.fire(R.self)
+        return value
     }
 
     private func request<RequestBody: Encodable, ResponseBody: Decodable>(
@@ -59,8 +43,11 @@ public struct ResourceClient<R: Resource> {
         return try await request(method, path, body: body)
     }
 
-    private func request<ResponseBody: Decodable>(_ method: String, _ path: String, body: Data? = nil) async throws -> ResponseBody {
-        guard let data = try await request(method, path, body: body) else {
+    private func request<ResponseBody: Decodable>(
+        _ method: String,
+        _ path: String, body: Data? = nil
+    ) async throws -> ResponseBody {
+        guard let data = try await requestData(method, path, body: body) else {
             throw ResourceError.invalidResponse
         }
 
@@ -68,7 +55,7 @@ public struct ResourceClient<R: Resource> {
     }
 
     @discardableResult
-    private func request(_ method: String, _ path: String, body: Data? = nil) async throws -> Data? {
+    private func requestData(_ method: String, _ path: String, body: Data? = nil) async throws -> Data? {
         let url = URL(string: basePath + path)!
         var req = URLRequest(url: url)
         req.httpMethod = method

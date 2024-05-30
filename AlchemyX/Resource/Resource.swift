@@ -4,20 +4,33 @@ public protocol Resource: Codable, Identifiable where ID == Identifier? {
     var id: Identifier? { get }
 
     static var path: String { get }
-    static var fields: [ResourceField] { get }
+    static var fields: [PartialKeyPath<Self>: ResourceField] { get }
 }
 
-public extension Resource {
-    static var path: String { "\(Self.self)".lowercased() }
-}
+extension Resource {
+    public static var path: String { 
+        "\(Self.self)".lowercased()
+    }
 
-public struct ResourceField: Identifiable {
-    public var id: String { name }
-    public let name: String
-    public let type: String
+    @discardableResult
+    public func save() async throws -> Self {
+        try await ResourceClient().create(self)
+    }
 
-    public init(_ name: String, type: String) {
-        self.name = name
-        self.type = type
+    public func get(id: Identifier) async throws -> Self {
+        try await ResourceClient().get(id: id)
+    }
+
+    public func all() async throws -> [Self] {
+        try await ResourceClient().all()
+    }
+
+    @discardableResult
+    public func update() async throws -> Self {
+        try await ResourceClient().update(self)
+    }
+
+    public func delete() async throws {
+        try await ResourceClient().delete(self)
     }
 }

@@ -53,14 +53,19 @@ extension Resource {
                 "self.\(property.name) = \(property.name)"
             }
         }
+        .access(accessLevel)
     }
 
     fileprivate func generateFieldLookup() -> Declaration {
         let fieldsString = storedProperties
-            .map { ".init(\($0.name.inQuotes), type: \($0.type.inQuotes))" }
+            .map { property in
+                let key = "\\\(name).\(property.name)"
+                let value = ".init(\(property.name.inQuotes), type: \(property.type.inQuotes))"
+                return "\(key): \(value)"
+            }
             .joined(separator: ",\n")
         return Declaration("""
-            public static let fields: [ResourceField] = [
+            public static let fields: [PartialKeyPath<\(name)>: ResourceField] = [
                 \(fieldsString)
             ]
             """)
