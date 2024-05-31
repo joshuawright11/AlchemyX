@@ -1,7 +1,7 @@
 extension Query {
     public func filter(_ filter: (QueryFilter<R>) -> QueryParameters.Filter) -> Self {
         let filter = filter(QueryFilter<R>())
-        storage.parameters.filters.append(filter)
+        initialStorage.parameters.filters.append(filter)
         return self
     }
 }

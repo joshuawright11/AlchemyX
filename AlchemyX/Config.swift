@@ -1,6 +1,6 @@
 enum AlchemyX {
     struct Config {
-        var baseURL: String = "http://localhost:3000/"
+        var baseURL: String = "http://localhost:3000"
     }
 
     private(set) static var config: Config = .init()

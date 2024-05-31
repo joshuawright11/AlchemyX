@@ -1,6 +1,6 @@
 public struct QueryParameters: Codable {
     public struct Filter: Codable {
-        enum Operator: String, Codable {
+        public enum Operator: String, Codable {
             case equals
             case notEquals
             case greaterThan
@@ -9,14 +9,14 @@ public struct QueryParameters: Codable {
             case lessThanEquals
         }
 
-        let field: String
-        let op: Operator
-        let value: String
+        public let field: String
+        public let op: Operator
+        public let value: String
     }
 
     public struct Sort: Codable {
-        let field: String
-        let ascending: Bool
+        public let field: String
+        public let ascending: Bool
     }
 
     public var filters: [Filter]

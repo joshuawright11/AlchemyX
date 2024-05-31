@@ -7,17 +7,26 @@ public struct Query<R: Resource>: DynamicProperty {
         @Published var isLoading: Bool = false
         @Published var error: Error? = nil
         @Published var results: [R]? = nil
-        @Published var parameters = QueryParameters(filters: [], sorts: [])
 
+        var parameters: QueryParameters
         var cancellables = Set<AnyCancellable>()
+        
+        /// A hack for ensuring the builder is only applied once, but not before
+        /// this storage is attached to a view.
+        var didBuild = false
 
-        init() {
+        init(parameters: QueryParameters = .init(filters: [], sorts: [])) {
+            self.parameters = parameters
+        }
+
+        func observe() {
             ResourceChanges
                 .monitor(R.self)
                 .sink { [weak self] in
                     self?._refresh()
                 }
                 .store(in: &cancellables)
+            _refresh()
         }
 
         func get() async throws -> [R] {
@@ -26,6 +35,7 @@ public struct Query<R: Resource>: DynamicProperty {
 
         @MainActor
         func refresh() async {
+            error = nil
             isLoading = true
             defer { isLoading = false }
             do {
@@ -42,7 +52,9 @@ public struct Query<R: Resource>: DynamicProperty {
         }
     }
 
-    @StateObject var storage = Storage()
+    @StateObject private var storage = Storage()
+
+    var initialStorage = Storage()
 
     // MARK: @propertyWrapper
 
@@ -53,10 +65,19 @@ public struct Query<R: Resource>: DynamicProperty {
 
     public var isLoading: Bool { storage.isLoading }
     public var error: Error? { storage.error }
+    private var builder: ((Query<R>) -> Query<R>)? = nil
 
-    public init() {}
+    public init() {
+        let storage = Storage()
+        storage.observe()
+        self._storage = .init(wrappedValue: storage)
+    }
+
     public init(_ builder: @escaping (Query<R>) -> Query<R>) {
-        self = builder(self)
+        let proxy = builder(Query())
+        let storage = Storage(parameters: proxy.initialStorage.parameters)
+        storage.observe()
+        self._storage = .init(wrappedValue: storage)
     }
 
     // MARK: Actions

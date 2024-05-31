@@ -11,11 +11,11 @@ public final class ResourceClient<R: Resource> {
     }
 
     public func all(_ parameters: QueryParameters? = nil) async throws -> [R] {
-        try await request("GET", "/", body: parameters)
+        try await request("POST", "/", body: parameters)
     }
 
     public func create(_ model: R) async throws -> R {
-        try await notifyChange { try await request("POST", "/", body: model) }
+        try await notifyChange { try await request("POST", "/create", body: model) }
     }
 
     public func update(_ model: R) async throws -> R {
@@ -40,14 +40,15 @@ public final class ResourceClient<R: Resource> {
         body: RequestBody
     ) async throws -> ResponseBody {
         let body = try encoder.encode(body)
-        return try await request(method, path, body: body)
+        return try await request(method, path, bodyData: body)
     }
 
     private func request<ResponseBody: Decodable>(
         _ method: String,
-        _ path: String, body: Data? = nil
+        _ path: String, 
+        bodyData: Data? = nil
     ) async throws -> ResponseBody {
-        guard let data = try await requestData(method, path, body: body) else {
+        guard let data = try await requestData(method, path, bodyData: bodyData) else {
             throw ResourceError.invalidResponse
         }
 
@@ -55,12 +56,12 @@ public final class ResourceClient<R: Resource> {
     }
 
     @discardableResult
-    private func requestData(_ method: String, _ path: String, body: Data? = nil) async throws -> Data? {
+    private func requestData(_ method: String, _ path: String, bodyData: Data? = nil) async throws -> Data? {
         let url = URL(string: basePath + path)!
         var req = URLRequest(url: url)
         req.httpMethod = method
-        req.httpBody = body
-        if body != nil {
+        req.httpBody = bodyData
+        if bodyData != nil {
             req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
 
