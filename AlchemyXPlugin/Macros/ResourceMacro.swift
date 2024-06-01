@@ -60,7 +60,7 @@ extension Resource {
         let fieldsString = storedProperties
             .map { property in
                 let key = "\\\(name).\(property.name)"
-                let value = ".init(\(property.name.inQuotes), type: \(property.type.inQuotes))"
+                let value = ".init(\(property.name.inQuotes), type: \(property.type).self)"
                 return "\(key): \(value)"
             }
             .joined(separator: ",\n")
