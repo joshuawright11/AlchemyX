@@ -60,7 +60,9 @@ extension Resource {
         let fieldsString = storedProperties
             .map { property in
                 let key = "\\\(name).\(property.name)"
-                let value = ".init(\(property.name.inQuotes), type: \(property.type).self)"
+                let defaultValue = property.defaultValue
+                let defaultArgument = defaultValue.map { ", default: \($0)" } ?? ""
+                let value = ".init(\(property.name.inQuotes), type: \(property.type).self\(defaultArgument))"
                 return "\(key): \(value)"
             }
             .joined(separator: ",\n")
