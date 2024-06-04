@@ -1,6 +1,7 @@
 public struct QueryParameters: Codable {
     public struct Filter: Codable {
         public enum Operator: String, Codable {
+            case contains
             case equals
             case notEquals
             case greaterThan

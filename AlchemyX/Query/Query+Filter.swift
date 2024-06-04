@@ -17,6 +17,12 @@ public struct QueryFilter<R: Resource> {
     }
 }
 
+extension FilterField<String> {
+    public func contains(_ string: String) -> QueryParameters.Filter {
+        .init(field: field, op: .contains, value: string)
+    }
+}
+
 public struct FilterField<L: LosslessStringConvertible> {
     let field: String
 
