@@ -20,12 +20,12 @@ public struct Query<R: Resource>: DynamicProperty {
         }
 
         func observe() {
-            ResourceChanges
-                .monitor(R.self)
-                .sink { [weak self] in
+            Task { [weak self] in
+                for await _ in EventStream.monitorResource(R.self) {
                     self?._refresh()
                 }
-                .store(in: &cancellables)
+            }
+
             _refresh()
         }
 
