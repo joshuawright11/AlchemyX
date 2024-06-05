@@ -1,37 +1,27 @@
-final class AlchemyClient {
-    struct Configuration {
-        var baseURL: String
+public final class AlchemyClient {
+    public struct Configuration {
+        public var baseURL: String
+
+        public init(baseURL: String) {
+            self.baseURL = baseURL
+        }
     }
 
-    static let current = AlchemyClient()
+    public static let shared = AlchemyClient()
 
     private(set) var configuration: Configuration?
 
-    func configure(baseURL: String) {
+    public func configure(baseURL: String) {
         configure(.init(baseURL: baseURL))
     }
 
-    func configure(_ configuration: Configuration) {
+    public func configure(_ configuration: Configuration) {
         self.configuration = configuration
     }
 
     // MARK: Auth
 
-    var auth = Auth()
+    public var auth = AuthClient()
 
     // MARK: Storage
 }
-
-/*
- 
- # Auth
-
- 1. login via config
-    - server handles username / password
- 2. pass bearer token through requests
- 3. server filters on token
-    - pulls user, filters items of that user
-    - need a way to auth / not auth models
-        - auto assigns user of authd models
-
- */

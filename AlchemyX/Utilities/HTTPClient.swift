@@ -1,4 +1,5 @@
 import Foundation
+import Papyrus
 
 struct HTTPClient {
     enum Method: String {
@@ -14,7 +15,11 @@ struct HTTPClient {
     let encoder = JSONEncoder()
     
     var alchemy: AlchemyClient {
-        .current
+        .shared
+    }
+
+    var provider: Provider {
+        Provider(baseURL: baseURL, urlSession: session)
     }
 
     var baseURL: String {
@@ -50,7 +55,11 @@ struct HTTPClient {
 
     @discardableResult
     func requestData(_ method: Method, _ path: String, bodyData: Data? = nil) async throws -> Data? {
-        let url = URL(string: baseURL + path)!
+        let urlString = [baseURL, path].joined(separator: "/")
+        guard let url = URL(string: urlString) else {
+            throw ResourceError.invalidURL(urlString)
+        }
+
         var req = URLRequest(url: url)
         req.httpMethod = method.rawValue
         req.httpBody = bodyData
