@@ -2,22 +2,17 @@ import Combine
 import SwiftUI
 
 @propertyWrapper
-public struct Query<R: Resource>: DynamicProperty {
+public struct Auth: DynamicProperty {
     final class Storage: ObservableObject {
         @Published var isLoading: Bool = false
         @Published var error: Error? = nil
-        @Published var results: [R]? = nil
+        @Published var user: User? = nil
 
-        var parameters: QueryParameters
         var cancellables = Set<AnyCancellable>()
-        
-        init(parameters: QueryParameters = .init(filters: [], sorts: [])) {
-            self.parameters = parameters
-        }
 
         func observe() {
             Task { [weak self] in
-                for await _ in EventStream.monitorResource(R.self) {
+                for await _ in EventStream.monitorAuth() {
                     self?._refresh()
                 }
             }
@@ -25,8 +20,8 @@ public struct Query<R: Resource>: DynamicProperty {
             _refresh()
         }
 
-        func get() async throws -> [R] {
-            try await ResourceClient<R>().all(parameters)
+        func get() async throws -> User {
+            try await AuthClient().getUser()
         }
 
         @MainActor
@@ -35,7 +30,7 @@ public struct Query<R: Resource>: DynamicProperty {
             isLoading = true
             defer { isLoading = false }
             do {
-                results = try await get()
+                user = try await get()
             } catch {
                 self.error = error
             }
@@ -54,14 +49,13 @@ public struct Query<R: Resource>: DynamicProperty {
 
     // MARK: @propertyWrapper
 
-    public var wrappedValue: [R] { storage.results ?? [] }
-    public var projectedValue: Query<R> { self }
+    public var wrappedValue: User? { storage.user }
+    public var projectedValue: Auth { self }
 
     // MARK: Underlying
 
     public var isLoading: Bool { storage.isLoading }
     public var error: Error? { storage.error }
-    private var builder: ((Query<R>) -> Query<R>)? = nil
 
     public init() {
         let storage = Storage()
@@ -69,26 +63,13 @@ public struct Query<R: Resource>: DynamicProperty {
         self._storage = .init(wrappedValue: storage)
     }
 
-    public init(_ builder: @escaping (Query<R>) -> Query<R>) {
-        let proxy = builder(Query())
-        let storage = Storage(parameters: proxy.initialStorage.parameters)
-        storage.observe()
-        self._storage = .init(wrappedValue: storage)
-    }
-
     // MARK: Actions
 
-    public func get() async throws -> [R] {
+    public func get() async throws -> User {
         try await storage.get()
     }
 
     public func refresh() async {
         await storage.refresh()
-    }
-}
-
-extension Resource {
-    public static func query() -> Query<Self> {
-        Query()
     }
 }

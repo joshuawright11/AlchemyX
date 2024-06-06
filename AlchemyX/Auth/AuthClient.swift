@@ -13,50 +13,38 @@ public final class AuthClient {
         set { UserDefaults.standard.setValue(newValue, forKey: "alchemy_auth_token") }
     }
 
-    @MainActor
-    var user: User? = nil
+    public init() {}
 
     public func signin(email: String, password: String) async throws {
         let res = try await api.signIn(email: email, password: password)
         await updateToken(res.token)
-        await updateUser(res.user)
     }
 
     public func signup(email: String, password: String) async throws {
         let res = try await api.signIn(email: email, password: password)
         await updateToken(res.token)
-        await updateUser(res.user)
     }
 
     public func signout() async throws {
         try await api.signOut()
         await updateToken(nil)
-        await updateUser(nil)
     }
 
     @discardableResult
-    public func refreshUser() async throws -> User {
-        let res = try await api.getUser()
-        await updateUser(res)
-        return res
+    public func getUser() async throws -> User {
+        try await api.getUser()
     }
 
     public func updateUser(
         email: String? = nil,
         phone: String? = nil,
         password: String? = nil
-    ) async throws {
-        let res = try await api.updateUser(email: email, phone: phone, password: password)
-        await updateUser(res)
+    ) async throws -> User {
+        try await api.updateUser(email: email, phone: phone, password: password)
     }
 
     @MainActor
     private func updateToken(_ token: String?) {
         self.token = token
-    }
-
-    @MainActor
-    private func updateUser(_ user: User?) {
-        self.user = user
     }
 }

@@ -16,10 +16,25 @@ final class EventStream {
         shared.event = event
     }
 
+    static func monitorAuth() -> AsyncStream<Void> {
+        shared.$event
+            .compactMap { event in
+                switch event {
+                case .signin:
+                    return
+                case .signout:
+                    return
+                default:
+                    return nil
+                }
+            }
+            .stream
+    }
+
     static func monitorResource(_ type: (some Resource).Type) -> AsyncStream<Void> {
         shared.$event
-            .compactMap {
-                switch $0 {
+            .compactMap { event in
+                switch event {
                 case .resourceChanged(let resource) where resource == type:
                     return
                 default:
