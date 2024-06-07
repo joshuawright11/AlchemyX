@@ -1,6 +1,8 @@
 import Foundation
 import Papyrus
 
+private let tokenKey = "alchemy_auth_token"
+
 public final class AuthClient {
     private let provider = HTTPClient().provider
     private var api: AuthAPI {
@@ -9,8 +11,8 @@ public final class AuthClient {
 
     @MainActor
     var token: String? {
-        get { UserDefaults.standard.string(forKey: "alchemy_auth_token") }
-        set { UserDefaults.standard.setValue(newValue, forKey: "alchemy_auth_token") }
+        get { UserDefaults.standard.string(forKey: tokenKey) }
+        set { UserDefaults.standard.setValue(newValue, forKey: tokenKey) }
     }
 
     public init() {}
