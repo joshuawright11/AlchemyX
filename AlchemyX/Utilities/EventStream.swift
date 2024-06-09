@@ -20,12 +20,9 @@ final class EventStream {
         shared.$event
             .compactMap { event in
                 switch event {
-                case .signin:
-                    return
-                case .signout:
-                    return
-                default:
-                    return nil
+                case .signin:  return
+                case .signout: return
+                default:       return nil
                 }
             }
             .stream
