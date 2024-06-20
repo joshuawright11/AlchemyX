@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "AlchemyX", targets: ["AlchemyX"]),
     ],
     dependencies: [
-        .package(path: "../../papyrus/papyrus"),
+        .package(url: "https://github.com/joshuawright11/papyrus", branch: "main"),
         .package(url: "https://github.com/apple/swift-syntax", from: "510.0.0"),
     ],
     targets: [
