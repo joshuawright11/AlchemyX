@@ -4,6 +4,7 @@ import SwiftUI
 @propertyWrapper
 public struct Query<R: Resource>: DynamicProperty {
     final class Storage: ObservableObject {
+        
         @Published var isLoading: Bool = false
         @Published var error: Error? = nil
         @Published var results: [R]? = nil
