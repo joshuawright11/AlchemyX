@@ -1,7 +1,6 @@
+#if canImport(SwiftUI)
+
 import Foundation
-#if os(Linux)
-import FoundationNetworking
-#endif
 import Papyrus
 
 struct HTTPClient {
@@ -78,3 +77,5 @@ struct HTTPClient {
         return data
     }
 }
+
+#endif
