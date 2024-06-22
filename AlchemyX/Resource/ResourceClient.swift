@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 import Papyrus
 
 public final class ResourceClient<R: Resource> {
@@ -38,3 +40,5 @@ public final class ResourceClient<R: Resource> {
         return value
     }
 }
+
+#endif

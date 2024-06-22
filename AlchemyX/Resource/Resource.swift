@@ -12,6 +12,7 @@ extension Resource {
         "\(Self.self)".lowercased()
     }
 
+#if canImport(SwiftUI)
     @discardableResult
     public func save() async throws -> Self {
         try await ResourceClient().create(self)
@@ -33,4 +34,5 @@ extension Resource {
     public func delete() async throws {
         try await ResourceClient().delete(self)
     }
+#endif
 }
