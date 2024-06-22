@@ -1,4 +1,3 @@
-import Foundation
 import Papyrus
 
 public final class ResourceClient<R: Resource> {

@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 public struct QueryParameters: Codable {
     public struct Filter: Codable {
         public enum Operator: String, Codable {
@@ -23,3 +25,5 @@ public struct QueryParameters: Codable {
     public var filters: [Filter]
     public var sorts: [Sort]
 }
+
+#endif

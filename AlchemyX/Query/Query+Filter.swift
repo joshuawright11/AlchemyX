@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 extension Query {
     public func filter(_ filter: (QueryFilter<R>) -> QueryParameters.Filter) -> Self {
         let filter = filter(QueryFilter<R>())
@@ -52,3 +54,5 @@ public struct FilterField<L: LosslessStringConvertible> {
         .init(field: lhs.field, op: .greaterThanEquals, value: rhs.description)
     }
 }
+
+#endif

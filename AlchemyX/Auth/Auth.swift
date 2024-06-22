@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 import Combine
 import SwiftUI
 
@@ -73,3 +75,5 @@ public struct Auth: DynamicProperty {
         await storage.refresh()
     }
 }
+
+#endif

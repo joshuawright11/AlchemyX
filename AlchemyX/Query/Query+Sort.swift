@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 extension Query {
     public func sort<L: LosslessStringConvertible>(_ key: KeyPath<R, L>, ascending: Bool = true) -> Self {
         guard let field = R.fields[key] else {
@@ -9,3 +11,5 @@ extension Query {
         return self
     }
 }
+
+#endif

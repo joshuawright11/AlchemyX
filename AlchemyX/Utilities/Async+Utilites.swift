@@ -1,3 +1,5 @@
+#if canImport(Combine)
+
 import Combine
 
 extension Publisher where Failure == Never {
@@ -10,3 +12,5 @@ extension Publisher where Failure == Never {
         }
     }
 }
+
+#endif

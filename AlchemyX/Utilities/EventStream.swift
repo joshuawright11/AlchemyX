@@ -1,3 +1,5 @@
+#if canImport(Combine)
+
 import Combine
 
 final class EventStream {
@@ -41,3 +43,5 @@ final class EventStream {
             .stream
     }
 }
+
+#endif

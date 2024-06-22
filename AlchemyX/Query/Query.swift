@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 import Combine
 import SwiftUI
 
@@ -93,3 +95,5 @@ extension Resource {
         Query()
     }
 }
+
+#endif
