@@ -21,7 +21,9 @@ public final class AlchemyClient {
 
     // MARK: Auth
 
+#if canImport(SwiftUI)
     public var auth = AuthClient()
+#endif
 
     // MARK: Storage
 }

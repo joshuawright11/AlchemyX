@@ -1,3 +1,5 @@
+#if canImport(SwiftUI)
+
 import Foundation
 import Papyrus
 
@@ -50,3 +52,5 @@ public final class AuthClient {
         self.token = token
     }
 }
+
+#endif
