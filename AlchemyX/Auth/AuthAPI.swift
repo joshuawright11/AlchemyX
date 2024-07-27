@@ -2,6 +2,7 @@ import Foundation
 import Papyrus
 
 @API
+//@Routes
 public protocol AuthAPI {
     @POST("/signin")
     func signIn(email: String, password: String) async throws -> AuthResponse
