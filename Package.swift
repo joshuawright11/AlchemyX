@@ -13,7 +13,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/joshuawright11/papyrus", branch: "main"),
-        .package(url: "https://github.com/apple/swift-syntax", "509.0.0"..<"601.0.0-prerelease"),
+        .package(url: "https://github.com/joshuawright11/fusion", branch: "macros"),
+        .package(url: "https://github.com/swiftlang/swift-syntax", from: "600.0.1"),
     ],
     targets: [
         .target(
@@ -21,6 +22,7 @@ let package = Package(
             dependencies: [
                 .byName(name: "AlchemyXPlugin"),
                 .product(name: "Papyrus", package: "papyrus"),
+                .product(name: "Fusion", package: "fusion"),
             ],
             path: "AlchemyX"
         ),
