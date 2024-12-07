@@ -13,7 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/joshuawright11/papyrus", branch: "main"),
-        .package(url: "https://github.com/joshuawright11/fusion", branch: "macros"),
+        .package(url: "https://github.com/joshuawright11/fusion", branch: "jwright/macros"),
         .package(url: "https://github.com/swiftlang/swift-syntax", from: "600.0.1"),
     ],
     targets: [
